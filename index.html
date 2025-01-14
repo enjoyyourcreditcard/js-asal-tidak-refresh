@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API Laravel & Javascript</title>
+</head>
+<body>
+    <h1>javascript asal tidak refresh</h1>
+
+    <br>
+
+    <button onclick="fetchUsers()">Fetch Users</button>
+
+    <br><br>
+
+    <div>
+        <table border="1px solid black">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody id="data-container">
+                <tr>
+                    <td colspan="99">
+                        No Records
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <br>
+
+        <input id="input-name" type="text" placeholder="name" name="name">
+        <input id="input-email" type="text" placeholder="email" name="email">
+        <input id="input-password" type="text" placeholder="password" name="password">
+        <button onclick="storeUser()">Submit</button>
+</body>
+<script>
+    async function fetchUsers() {
+        const url = "http://127.0.0.1:8000/api/users";
+
+        const response = await fetch(url);
+
+        const datas = await response.json();
+
+        console.log(datas);
+
+        renderTable(datas);
+    }
+
+    async function storeUser() {
+        const url = "http://127.0.0.1:8000/api/register";
+
+        const data = {
+            'name': document.getElementById('input-name').value,
+            'email': document.getElementById('input-email').value,
+            'password': document.getElementById('input-password').value
+        };
+
+        const response = await fetch(url, {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        clearInputs();
+        fetchUsers();
+    }
+
+    function clearInputs() {
+        document.getElementById('input-name').value = null;
+        document.getElementById('input-email').value = null;
+        document.getElementById('input-password').value = null;
+    }
+
+    function renderTable(datas) {
+        const container = document.getElementById('data-container');
+
+        container.innerHTML = null;
+
+        datas.forEach((element, index) => {
+            const tr = container.insertRow();
+
+            tr.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${element.name}</td>
+                <td>${element.email}</td>
+            `;
+        });
+    }
+</script>
+</html>
